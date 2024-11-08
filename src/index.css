@@ -1,0 +1,22 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card-flip {
+    @apply transition-transform duration-300 transform perspective-1000;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.game-container {
+  @apply max-w-7xl mx-auto p-4;
+}

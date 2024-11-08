@@ -7,7 +7,7 @@ const GameBoard = () => {
 
   return (
     <motion.div 
-      className="grid grid-cols-4 gap-4 p-8"
+      className="grid grid-cols-4 gap-4 p-4 max-w-2xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >

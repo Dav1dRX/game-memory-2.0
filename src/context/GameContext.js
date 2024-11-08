@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { emojis } from '../utils/gameUtils';
+import { generateCards } from '../utils/gameUtils';
 
 const initialState = {
   isPlaying: false,
-  gameMode: null, // 'single' or 'multi'
+  gameMode: null,
   currentPlayer: 1,
   players: {
     1: { name: 'Player 1', score: 0, matches: 0 },
@@ -12,8 +12,10 @@ const initialState = {
   cards: [],
   selectedCards: [],
   turnTimer: 30,
-  timer: 0,
-  highScores: []
+  highScores: {
+    single: [],
+    multi: []
+  }
 };
 
 export const GameContext = createContext();
@@ -23,25 +25,22 @@ export const useGame = () => useContext(GameContext);
 const gameReducer = (state, action) => {
   switch (action.type) {
     case 'START_GAME':
-      const shuffledEmojis = [...emojis, ...emojis]
-        .sort(() => Math.random() - 0.5)
-        .map((emoji, index) => ({
-          id: index,
-          value: emoji,
-          matched: false
-        }));
-
       return {
         ...state,
         isPlaying: true,
         gameMode: action.payload.mode,
-        cards: shuffledEmojis,
-        timer: 0,
+        cards: generateCards(),
+        turnTimer: 30,
+        selectedCards: [],
         currentPlayer: 1
       };
 
     case 'SELECT_CARD':
       if (state.selectedCards.length >= 2) return state;
+      if (state.selectedCards.find(c => c.id === action.payload.id) || 
+          state.cards.find(c => c.id === action.payload.id).matched) {
+        return state;
+      }
       
       return {
         ...state,
@@ -79,18 +78,31 @@ const gameReducer = (state, action) => {
       };
 
     case 'UPDATE_TIMER':
+      const newTimer = state.turnTimer - 1;
+      
+      if (newTimer < 0) {
+        return {
+          ...state,
+          isPlaying: false,
+          gameOver: true
+        };
+      }
+
       return {
         ...state,
-        timer: state.timer + 1,
-        turnTimer: state.turnTimer - 1
+        turnTimer: newTimer
       };
 
     case 'END_GAME':
+      const winner = state.gameMode === 'multi' 
+        ? state.players[1].score > state.players[2].score 
+          ? state.players[1] 
+          : state.players[2]
+        : state.players[1];
+
       const newScore = {
-        playerName: state.gameMode === 'single' 
-          ? 'Player 1' 
-          : `${state.players[1].name} vs ${state.players[2].name}`,
-        score: state.players[1].score + state.players[2].score,
+        playerName: winner.name,
+        score: winner.score,
         date: new Date().toISOString(),
         mode: state.gameMode
       };
@@ -98,9 +110,15 @@ const gameReducer = (state, action) => {
       return {
         ...state,
         isPlaying: false,
-        highScores: [...state.highScores, newScore]
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10)
+        gameOver: true,
+        winner,
+        highScores: {
+          ...state.highScores,
+          [state.gameMode]: [
+            ...state.highScores[state.gameMode] || [],
+            newScore
+          ].sort((a, b) => b.score - a.score).slice(0, 10)
+        }
       };
 
     default:
@@ -110,7 +128,6 @@ const gameReducer = (state, action) => {
 
 export const GameProvider = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  
   return (
     <GameContext.Provider value={{ state, dispatch }}>
       {children}

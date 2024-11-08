@@ -1,19 +1,21 @@
 export const emojis = [
-  '🦊', '🐶', '🐱', '🦁', '🐯', '🐸', '🐙', '🐵',
+  '🦊', '🐶', '🐱', '🦁', '🐯', '🐸', '🦄', '🐵',
   '🐼', '🐨', '🐷', '🦒', '🦘', '🦔', '🦦', '🦥'
 ];
 
+// src/utils/gameUtils.js
 export const generateCards = () => {
-  const gameEmojis = emojis.slice(0, 8);
+  const gameEmojis = emojis.slice(0, 8); // 8 pairs for 4x4 grid
   const pairs = [...gameEmojis, ...gameEmojis];
+  
   return pairs
     .map((emoji, index) => ({
-      id: index,
+      id: `card-${index}`,  // Unique ID for React keys
       value: emoji,
       matched: false
     }))
     .sort(() => Math.random() - 0.5);
-};
+}; 
 
 export const calculateScore = (timeLeft, attempts) => {
   const baseScore = 100;

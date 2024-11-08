@@ -1,17 +1,23 @@
 import { useGame } from '../../context/GameContext';
-import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 const Timer = () => {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   
+  useEffect(() => {
+    let interval;
+    if (state.isPlaying) {
+      interval = setInterval(() => {
+        dispatch({ type: 'UPDATE_TIMER' });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [state.isPlaying, dispatch]);
+
   return (
-    <motion.div 
-      className="text-4xl font-bold text-center p-4"
-      animate={{ scale: state.timer % 2 ? 1.1 : 1 }}
-    >
-      {Math.floor(state.timer / 60)}:
-      {(state.timer % 60).toString().padStart(2, '0')}
-    </motion.div>
+    <div className="text-2xl font-bold">
+      {state.turnTimer}s
+    </div>
   );
 };
 

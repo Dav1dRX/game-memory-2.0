@@ -1,42 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { GameContext } from '../../context/GameContext';
 
-const Timer = ({ isRunning, onTimeUp }) => {
-  const [time, setTime] = useState(30); // 30 segundos por turno
+const Timer = () => {
+  const { state: { isPlaying, timer }, dispatch } = useContext(GameContext);
 
   useEffect(() => {
     let interval;
-    
-    if (isRunning && time > 0) {
+    if (isPlaying) {
       interval = setInterval(() => {
-        setTime((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(interval);
-            onTimeUp?.();
-            return 0;
-          }
-          return prevTime - 1;
-        });
+        dispatch({ type: 'UPDATE_TIMER' });
       }, 1000);
     }
+    return () => clearInterval(interval);
+  }, [isPlaying, dispatch]);
 
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [isRunning, time, onTimeUp]);
-
-  useEffect(() => {
-    if (!isRunning) {
-      setTime(30); // Reset timer when not running
-    }
-  }, [isRunning]);
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
-    <div className="text-center p-2 bg-gray-100 rounded">
-      <div className="font-mono text-xl">
-        Time: {time}s
-      </div>
+    <div className="text-xl font-mono">
+      {formatTime(timer)}
     </div>
   );
 };

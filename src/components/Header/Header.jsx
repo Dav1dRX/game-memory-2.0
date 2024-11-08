@@ -1,21 +1,39 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { GameContext } from '../../context/GameContext';
+import Timer from '../Timer/Timer';  
 
-const Header = ({ currentPlayer, scores }) => {
+export default function Header() {
+  const { state: { gameMode, players, currentPlayer, isPlaying } } = useContext(GameContext);
+
   return (
-    <header className="w-full p-4 bg-blue-500 text-white">
-      <div className="container mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-4">Memory Game</h1>
-        <div className="flex justify-center gap-8">
-          <div className={`p-2 rounded ${currentPlayer === 1 ? 'bg-blue-700' : ''}`}>
-            Player 1: {scores?.player1 || 0}
+    <div className="flex justify-between items-center p-4 bg-slate-800 text-white">
+      <div className="flex gap-4">
+        {gameMode === 'multi' && (
+          <div className="flex gap-2">
+            {Object.entries(players).map(([id, player]) => (
+              <div 
+                key={id}
+                className={`p-2 rounded ${
+                  currentPlayer === Number(id) ? 'bg-blue-600' : 'bg-slate-700'
+                }`}
+              >
+                <p>{player.name}</p>
+                <p className="text-sm">Score: {player.score}</p>
+              </div>
+            ))}
           </div>
-          <div className={`p-2 rounded ${currentPlayer === 2 ? 'bg-blue-700' : ''}`}>
-            Player 2: {scores?.player2 || 0}
-          </div>
-        </div>
+        )}
       </div>
-    </header>
+      
+      <div className="flex items-center gap-4">
+        {isPlaying && <Timer />}
+        <button 
+          onClick={() => window.location.reload()} 
+          className="bg-red-500 px-4 py-2 rounded"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
   );
 };
-
-export default Header;

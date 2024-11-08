@@ -1,29 +1,17 @@
-import { useContext, useEffect } from 'react';
-import { GameContext } from '../../context/GameContext';
+import { useGame } from '../../context/GameContext';
+import { motion } from 'framer-motion';
 
 const Timer = () => {
-  const { state: { isPlaying, timer }, dispatch } = useContext(GameContext);
-
-  useEffect(() => {
-    let interval;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        dispatch({ type: 'UPDATE_TIMER' });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, dispatch]);
-
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
+  const { state } = useGame();
+  
   return (
-    <div className="text-xl font-mono">
-      {formatTime(timer)}
-    </div>
+    <motion.div 
+      className="text-4xl font-bold text-center p-4"
+      animate={{ scale: state.timer % 2 ? 1.1 : 1 }}
+    >
+      {Math.floor(state.timer / 60)}:
+      {(state.timer % 60).toString().padStart(2, '0')}
+    </motion.div>
   );
 };
 

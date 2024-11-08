@@ -1,67 +1,66 @@
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+import { useGame } from '../../context/GameContext';
+import { motion } from 'framer-motion';
 
 const ScoreBoard = () => {
-  const [scores, setScores] = useState({
-    singlePlayer: [],
-    multiPlayer: []
-  });
-
-  useEffect(() => {
-    // Cargar puntuaciones del localStorage
-    const savedScores = JSON.parse(localStorage.getItem('highScores') || '{"singlePlayer":[],"multiPlayer":[]}');
-    setScores(savedScores);
-  }, []);
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  const [activeTab, setActiveTab] = useState('single');
+  const { state } = useGame();
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-center">Mejores Puntuaciones</CardTitle>
+        <CardTitle>Scoreboard</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="singlePlayer">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="singlePlayer">Un Jugador</TabsTrigger>
-            <TabsTrigger value="multiPlayer">Multijugador</TabsTrigger>
+        <Tabs defaultValue={activeTab}>
+          <TabsList>
+            <TabsTrigger 
+              value="single"
+              isActive={activeTab === 'single'}
+              onClick={() => setActiveTab('single')}
+            >
+              Single Player
+            </TabsTrigger>
+            <TabsTrigger 
+              value="multi"
+              isActive={activeTab === 'multi'}
+              onClick={() => setActiveTab('multi')}
+            >
+              Multiplayer
+            </TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="singlePlayer">
-            <div className="space-y-2">
-              {scores.singlePlayer.map((score, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center p-2 bg-gray-50 rounded"
-                >
-                  <span className="font-medium">{score.playerName}</span>
-                  <span className="text-gray-600">{score.score} pts</span>
-                  <span className="text-sm text-gray-400">{formatDate(score.date)}</span>
+
+          <TabsContent value="single">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-2"
+            >
+              {state.highScores?.map((score, index) => (
+                <div key={index} className="flex justify-between p-2 bg-gray-50 rounded">
+                  <span>{score.playerName}</span>
+                  <span>{score.score}</span>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </TabsContent>
-          
-          <TabsContent value="multiPlayer">
-            <div className="space-y-2">
-              {scores.multiPlayer.map((score, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center p-2 bg-gray-50 rounded"
-                >
-                  <div>
-                    <div className="font-medium">{score.winner}</div>
-                    <div className="text-sm text-gray-500">vs {score.loser}</div>
-                  </div>
-                  <span className="text-gray-600">{score.score} pts</span>
-                  <span className="text-sm text-gray-400">{formatDate(score.date)}</span>
+
+          <TabsContent value="multi">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {Object.values(state.players).map(player => (
+                <div key={player.id} className="p-4 bg-gray-50 rounded-lg text-center">
+                  <h3 className="font-bold">{player.name}</h3>
+                  <p>Score: {player.score}</p>
+                  <p>Matches: {player.matches}</p>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </TabsContent>
         </Tabs>
       </CardContent>

@@ -1,9 +1,9 @@
-// src/App.js
 import { GameProvider } from './context/GameContext';
 import { useGame } from './context/GameContext';
 import Header from './components/Header/Header';
 import GameBoard from './components/GameBoard/GameBoard';
 import ScoreBoard from './components/ScoreBoard/ScoreBoard';
+import GameOverModal from './components/GameOverModal';
 
 function GameContent() {
   const { state, dispatch } = useGame();
@@ -71,9 +71,10 @@ function GameContent() {
 function App() {
   return (
     <GameProvider>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
         <Header />
         <GameContent />
+        <GameOverModal />
       </div>
     </GameProvider>
   );

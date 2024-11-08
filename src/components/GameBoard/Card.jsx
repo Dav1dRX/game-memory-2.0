@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 const Card = ({ card, isSelected, onSelect }) => {
   return (
     <motion.div
-      initial={{ rotateY: 0 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       animate={{ 
         rotateY: isSelected || card.matched ? 180 : 0,
         scale: card.matched ? 0.9 : 1
       }}
-      transition={{ duration: 0.6, type: "spring" }}
       className={`
         relative w-24 h-24 cursor-pointer perspective-1000
         ${card.matched ? 'bg-green-100' : 'bg-blue-500'}
@@ -26,3 +26,5 @@ const Card = ({ card, isSelected, onSelect }) => {
     </motion.div>
   );
 };
+
+export default Card;

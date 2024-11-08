@@ -35,7 +35,23 @@ const gameReducer = (state, action) => {
         currentPlayer: 1
       };
 
+    case 'RESET_GAME':
+      return {
+        ...initialState,
+        gameMode: state.gameMode,
+        highScores: state.highScores // Preserve high scores
+      };
+
     case 'SELECT_CARD':
+      // Start timer on first card click aadgbpiudgvpDASDV
+      if (!state.timerStarted && state.isPlaying) {
+        return {
+          ...state,
+          timerStarted: true,
+          selectedCards: [action.payload]
+        };
+      }
+      
       if (state.selectedCards.length >= 2) return state;
       if (state.selectedCards.find(c => c.id === action.payload.id) || 
           state.cards.find(c => c.id === action.payload.id).matched) {
@@ -50,9 +66,9 @@ const gameReducer = (state, action) => {
     case 'CHECK_MATCH':
       const [first, second] = state.selectedCards;
       const isMatch = first.value === second.value;
-      const currentPlayerScore = state.players[state.currentPlayer].score;
+      const currentScore = state.players[state.currentPlayer].score;
       const matchPoints = 10;
-      const missPoints = -2;
+      const penaltyPoints = Math.min(currentScore, 2); // Never go below 0
 
       return {
         ...state,
@@ -65,10 +81,8 @@ const gameReducer = (state, action) => {
           ...state.players,
           [state.currentPlayer]: {
             ...state.players[state.currentPlayer],
-            score: currentPlayerScore + (isMatch ? matchPoints : missPoints),
-            matches: isMatch 
-              ? state.players[state.currentPlayer].matches + 1 
-              : state.players[state.currentPlayer].matches
+            score: currentScore + (isMatch ? matchPoints : -penaltyPoints),
+            matches: isMatch ? state.players[state.currentPlayer].matches + 1 : state.players[state.currentPlayer].matches
           }
         },
         currentPlayer: state.gameMode === 'multi' && !isMatch
@@ -78,20 +92,43 @@ const gameReducer = (state, action) => {
       };
 
     case 'UPDATE_TIMER':
-      const newTimer = state.turnTimer - 1;
-      
-      if (newTimer < 0) {
+      if (state.turnTimer <= 0) {
+        const currentPlayer = state.players[state.currentPlayer];
+        const newScore = {
+          playerName: state.gameMode === 'single' ? 'You' : currentPlayer.name,
+          score: currentPlayer.score,
+          date: new Date().toISOString(),
+          mode: state.gameMode,
+          id: Date.now() // Add unique ID to prevent duplicates
+        };
+
+        // Get existing scores
+        const savedScores = JSON.parse(
+          localStorage.getItem('memory-game-scores') || 
+          '{"single":[], "multi":[]}'
+        );
+
+        // Check for duplicates and add new score
+        const currentModeScores = savedScores[state.gameMode];
+        if (!currentModeScores.some(score => score.id === newScore.id)) {
+          currentModeScores.push(newScore);
+          currentModeScores.sort((a, b) => b.score - a.score);
+          savedScores[state.gameMode] = currentModeScores.slice(0, 10);
+          localStorage.setItem('memory-game-scores', JSON.stringify(savedScores));
+        }
+
         return {
           ...state,
           isPlaying: false,
-          gameOver: true
+          gameOver: true,
+          winner: {
+            name: state.gameMode === 'single' ? 'You' : currentPlayer.name,
+            score: currentPlayer.score
+          },
+          highScores: savedScores
         };
       }
-
-      return {
-        ...state,
-        turnTimer: newTimer
-      };
+      return { ...state, turnTimer: state.turnTimer - 1 };
 
     case 'END_GAME':
       const winner = state.gameMode === 'multi' 
@@ -107,18 +144,22 @@ const gameReducer = (state, action) => {
         mode: state.gameMode
       };
 
+      // Save to localStorage
+      const savedScores = JSON.parse(localStorage.getItem('memory-game-scores') || '{"single":[], "multi":[]}');
+      savedScores[state.gameMode].push(newScore);
+      savedScores[state.gameMode].sort((a, b) => b.score - a.score);
+      savedScores[state.gameMode] = savedScores[state.gameMode].slice(0, 10);
+      localStorage.setItem('memory-game-scores', JSON.stringify(savedScores));
+
       return {
         ...state,
         isPlaying: false,
         gameOver: true,
-        winner,
-        highScores: {
-          ...state.highScores,
-          [state.gameMode]: [
-            ...state.highScores[state.gameMode] || [],
-            newScore
-          ].sort((a, b) => b.score - a.score).slice(0, 10)
-        }
+        winner: {
+          name: winner.name,
+          score: winner.score
+        },
+        highScores: savedScores
       };
 
     default:

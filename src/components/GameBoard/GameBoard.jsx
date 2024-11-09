@@ -1,97 +1,45 @@
 import { useGame } from '../../context/GameContext';
-import { Card } from './Card';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card as UICard, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { motion } from 'framer-motion';
+import { Card } from './Card';  
 
 const GameBoard = () => {
   const { state, dispatch } = useGame();
 
   return (
-    <div className="space-y-4">
-      <AnimatePresence>
-        {state.gameMode === 'multi' && (
-          <div className="flex justify-between mb-4">
-            {Object.values(state.players).map(player => (
-              <motion.div
-                key={player.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <UICard>
-                  <CardHeader>
-                    <CardTitle>{player.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className={`
-                      p-4 rounded-lg ${
-                        state.currentPlayer === player.id 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-100'
-                      }
-                    `}>
-                      <p>Score: {player.score}</p>
-                      <p>Matches: {player.matches}</p>
-                    </div>
-                  </CardContent>
-                </UICard>
-              </motion.div>
-            ))}
+    <div className="space-y-8">
+      {/* Player Info - Ahora visible también en single player */}
+      <div className="player-info">
+        <h3 className="text-xl font-bold mb-4 neon-text">
+          {state.gameMode === 'single' ? 'Player' : `Player ${state.currentPlayer}`}
+        </h3>
+        <div className="grid grid-cols-2 gap-4 text-center">
+          <div>
+            <p className="text-cyan-400">Matches</p>
+            <p className="text-2xl">{state.players[1].matches}</p>
           </div>
-        )}
-
-        <motion.div 
-          className="grid grid-cols-4 gap-4 p-4 max-w-2xl mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {state.cards.map(card => (
-            <Card
-              key={card.id}
-              card={card}
-              isSelected={state.selectedCards.some(c => c.id === card.id)}
-              onSelect={() => dispatch({ type: 'SELECT_CARD', payload: card })}
-            />
-          ))}
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
-};
-
-const ScoreBoard = () => {
-  const { state } = useGame();
-  
-  // Only show scores for current game mode
-  const scores = state.highScores?.[state.gameMode] || [];
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          High Scores - {state.gameMode === 'single' ? 'Single Player' : 'Multiplayer'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <AnimatePresence>
-            {scores.map((score, index) => (
-              <motion.div
-                key={`score-${score.date}-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex justify-between p-2 bg-gray-50 rounded mb-2"
-              >
-                <span>{score.playerName}</span>
-                <span>{score.score}</span>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <div>
+            <p className="text-cyan-400">Score</p>
+            <p className="text-2xl">{state.players[1].score}</p>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Grid de cartas */}
+      <motion.div 
+        className="grid grid-cols-4 gap-6 p-6 max-w-3xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {state.cards.map(card => (
+          <Card
+            key={card.id}
+            card={card}
+            isSelected={state.selectedCards.some(c => c.id === card.id)}
+            onSelect={() => dispatch({ type: 'SELECT_CARD', payload: card })}
+          />
+        ))}
+      </motion.div>
+    </div>
   );
 };
 

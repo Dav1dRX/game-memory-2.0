@@ -26,13 +26,28 @@ const gameReducer = (state, action) => {
   switch (action.type) {
     case 'START_GAME':
       return {
-        ...state,
+        ...initialState,
         isPlaying: true,
+        gameOver: false, // Explicitly reset gameOver
         gameMode: action.payload.mode,
         cards: generateCards(),
-        turnTimer: 30,
-        selectedCards: [],
-        currentPlayer: 1
+        highScores: state.highScores, // Preserve high scores
+        players: {
+          1: {
+            id: 1,
+            name: action.payload.mode === 'single' ? 'Player' : 'Player 1',
+            score: 0,
+            matches: 0
+          },
+          ...(action.payload.mode === 'multi' && {
+            2: {
+              id: 2,
+              name: 'Player 2',
+              score: 0,
+              matches: 0
+            }
+          })
+        }
       };
 
     case 'RESET_GAME':
@@ -43,21 +58,7 @@ const gameReducer = (state, action) => {
       };
 
     case 'SELECT_CARD':
-      // Start timer on first card click aadgbpiudgvpDASDV
-      if (!state.timerStarted && state.isPlaying) {
-        return {
-          ...state,
-          timerStarted: true,
-          selectedCards: [action.payload]
-        };
-      }
-      
       if (state.selectedCards.length >= 2) return state;
-      if (state.selectedCards.find(c => c.id === action.payload.id) || 
-          state.cards.find(c => c.id === action.payload.id).matched) {
-        return state;
-      }
-      
       return {
         ...state,
         selectedCards: [...state.selectedCards, action.payload]
@@ -160,6 +161,15 @@ const gameReducer = (state, action) => {
           score: winner.score
         },
         highScores: savedScores
+      };
+
+    case 'PLAY_AGAIN':
+      return {
+        ...initialState,
+        gameMode: state.gameMode,
+        highScores: state.highScores,
+        isPlaying: true,
+        cards: generateCards(),
       };
 
     default:

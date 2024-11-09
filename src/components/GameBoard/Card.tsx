@@ -1,5 +1,4 @@
-// src/components/GameBoard/Card.tsx
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion'; 
 import { Card as CardType } from '../../types/game';
 
 interface CardProps {
@@ -10,35 +9,49 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ card, isSelected, onSelect }) => {
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ 
-          scale: 1,
-          rotateY: isSelected || card.matched ? 180 : 0 
-        }}
-        exit={{ scale: 0 }}
-        transition={{
-          type: "spring",
-          stiffness: 260,
-          damping: 20
-        }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={`
-          relative w-24 h-24 cursor-pointer
-          ${card.matched ? 'bg-green-200' : 'bg-blue-500'}
-          rounded-lg shadow-lg transform transition-all
-        `}
-        onClick={() => !card.matched && !isSelected && onSelect()}
-      >
-        <motion.div 
-          className="absolute inset-0 flex items-center justify-center text-2xl"
-          animate={{ opacity: isSelected || card.matched ? 1 : 0 }}
-        >
-          {card.value}
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+    <div className="card-container" onClick={() => !card.matched && !isSelected && onSelect()}>
+      <div className={`card-inner ${isSelected || card.matched ? 'flipped' : ''}`}>
+        {/* Front Face */}
+        <div className="card-face front">
+          <div className="w-full h-full bg-gradient-to-br from-violet-900/90 to-indigo-900/90
+                       border-2 border-cyan-500/50 rounded-xl
+                       flex items-center justify-center
+                       shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <motion.span 
+              className="text-5xl text-cyan-400 font-bold"
+              animate={{ 
+                textShadow: [
+                  "0 0 8px #00fff0, 0 0 12px #00fff0",
+                  "0 0 15px #00fff0, 0 0 20px #00fff0"
+                ]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              ?
+            </motion.span>
+          </div>
+        </div>
+
+        {/* Back Face */}
+        <div className="card-face back">
+          <div className={`
+            w-full h-full rounded-xl flex items-center justify-center
+            ${card.matched 
+              ? 'bg-gradient-to-br from-emerald-900/90 to-teal-900/90 border-2 border-green-400/50' 
+              : 'bg-gradient-to-br from-cyan-900/90 to-blue-900/90 border-2 border-cyan-400/50'
+            }`}>
+            <motion.span 
+              className={`text-5xl font-bold ${card.matched ? 'text-green-400' : 'text-cyan-400'}`}
+            >
+              {card.value}
+            </motion.span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -1,3 +1,4 @@
+// src/components/ScoreBoard/ScoreBoard.jsx
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { useGame } from '../../context/GameContext';
@@ -5,35 +6,41 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const ScoreBoard = () => {
   const { state } = useGame();
-  
-  // Get scores for current game mode
   const scores = state.highScores?.[state.gameMode] || [];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
+    <Card className="bg-black/30 backdrop-blur-sm border-2 border-cyan-500/20 max-w-md">
+      <CardHeader className="p-4">
+        <CardTitle className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
           High Scores - {state.gameMode === 'single' ? 'Single Player' : 'Multiplayer'}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
+      <CardContent className="p-4">
+        <div className="max-h-[250px] overflow-y-auto pr-2 space-y-2 
+                      scrollbar-thin scrollbar-track-gray-800/40 
+                      scrollbar-thumb-cyan-500/60">
           <AnimatePresence>
             {scores.map((score, index) => (
               <motion.div
                 key={`score-${score.date}-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex justify-between p-2 bg-gray-50 rounded mb-2"
+                className="flex justify-between p-2 bg-black/40 rounded-lg border border-cyan-500/10"
               >
-                <span>{score.playerName}</span>
-                <span>{score.score}</span>
+                <span className="text-cyan-300 text-sm">{score.playerName}</span>
+                <span className="font-bold text-white text-sm">{score.score}</span>
               </motion.div>
             ))}
             {scores.length === 0 && (
-              <p className="text-center text-gray-500">No high scores yet!</p>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center text-cyan-500/50 text-sm py-4"
+              >
+                No high scores yet!
+              </motion.p>
             )}
           </AnimatePresence>
         </div>

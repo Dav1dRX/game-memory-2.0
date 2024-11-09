@@ -14,7 +14,7 @@ export const useGame = () => {
         payload: JSON.parse(savedScores)
       });
     }
-  }, []);
+  }, [dispatch]); // Added dispatch to dependency array
 
   // Handle card matching logic
   useEffect(() => {

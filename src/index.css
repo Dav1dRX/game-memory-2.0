@@ -1,7 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-900 text-white overflow-x-hidden;
+    background-image: radial-gradient(circle at 50% 50%, rgba(50, 0, 100, 0.2) 0%, transparent 100%),
+                     repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.2) 3px, transparent 3px),
+                     linear-gradient(to right, rgba(0,255,255,0.05) 1px, transparent 1px),
+                     linear-gradient(to bottom, rgba(0,255,255,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+    font-family: 'Press Start 2P', system, -apple-system, sans-serif;
+  }
+
+  @keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+  }
+}
 
 @layer components {
   .card-flip {
@@ -11,12 +30,437 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+
+  .game-container {
+    @apply max-w-7xl mx-auto p-6 md:p-8;
+  }
+
+  .card {
+    @apply relative w-24 h-24 md:w-28 md:h-28
+           bg-gray-900 border-2
+           rounded-lg cursor-pointer
+           transform transition-all duration-500
+           hover:scale-105;
+    box-shadow: 0 0 5px currentColor,
+                inset 0 0 5px currentColor;
+  }
+
+  .card.matched {
+    @apply border-green-400;
+    box-shadow: 0 0 10px #0f0,
+                inset 0 0 10px #0f0;
+  }
+
+  .card.selected {
+    @apply border-yellow-400;
+    box-shadow: 0 0 10px #ff0,
+                inset 0 0 10px #ff0;
+  }
+
+  .header {
+    @apply bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 
+           text-white shadow-lg backdrop-blur-sm
+           border-b border-white/10;
+  }
+
+  .score-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-xl
+           p-6 border border-white/20
+           hover:shadow-2xl transition-shadow;
+  }
+
+  .button-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600
+           text-white rounded-lg shadow-lg
+           hover:from-violet-600 hover:to-purple-700
+           transform transition-all duration-200
+           hover:scale-105 hover:shadow-xl
+           active:scale-95;
+  }
+
+  .button-secondary {
+    @apply px-6 py-3 bg-gradient-to-r from-gray-500 to-slate-600
+           text-white rounded-lg shadow-lg
+           hover:from-gray-600 hover:to-slate-700
+           transform transition-all duration-200
+           hover:scale-105 hover:shadow-xl
+           active:scale-95;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .game-info {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl
+           shadow-xl p-6 border border-white/20;
+  }
+
+  .player-card {
+    @apply p-4 rounded-xl transition-all duration-300
+           backdrop-blur-sm border border-white/20;
+  }
+
+  .player-active {
+    @apply bg-gradient-to-r from-violet-500 to-purple-600 text-white;
+  }
+
+  .player-inactive {
+    @apply bg-white/50;
+  }
+
+  .modal {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm
+           flex items-center justify-center;
+  }
+
+  .modal-content {
+    @apply bg-white/90 backdrop-blur-md p-8 rounded-2xl
+           shadow-2xl border border-white/20
+           transform transition-all duration-300;
+  }
+
+  .neon-text {
+    @apply font-bold;
+    text-shadow: 0 0 5px #fff,
+                 0 0 10px #fff,
+                 0 0 15px #0ff,
+                 0 0 20px #0ff,
+                 0 0 25px #0ff;
+  }
+
+  .neon-box {
+    @apply relative rounded-lg overflow-hidden;
+    box-shadow: 0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 15px #0ff,
+                0 0 20px #0ff;
+  }
+
+  .arcade-btn {
+    @apply relative px-8 py-4 rounded-lg text-white font-bold
+           transition-all duration-300 transform hover:scale-105
+           border-2 border-current overflow-hidden;
+    text-shadow: 0 0 5px currentColor;
+    box-shadow: 0 0 10px currentColor,
+                inset 0 0 10px currentColor;
+  }
+
+  .arcade-btn::before {
+    @apply absolute inset-0 opacity-20;
+    content: '';
+    background: linear-gradient(45deg, transparent 25%, currentColor 25%, 
+                currentColor 50%, transparent 50%, transparent 75%, currentColor 75%);
+    background-size: 10px 10px;
+    animation: buttonPattern 1s linear infinite;
+  }
+
+  @keyframes buttonPattern {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 20px; }
+  }
+
+  .neon-card {
+    @apply relative border-2 rounded-lg overflow-hidden
+           transform transition-all duration-300 cursor-pointer;
+    background: rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(0,255,255,0.3),
+                inset 0 0 15px rgba(0,255,255,0.2);
+  }
+
+  .neon-card:hover {
+    box-shadow: 0 0 20px rgba(0,255,255,0.5),
+                inset 0 0 25px rgba(0,255,255,0.3);
+  }
+
+  .neon-card.matched {
+    border-color: #0f0;
+    box-shadow: 0 0 20px rgba(0,255,0,0.5),
+                inset 0 0 25px rgba(0,255,0,0.3);
+  }
+
+  .neon-card.selected {
+    border-color: #ff0;
+    box-shadow: 0 0 20px rgba(255,255,0,0.5),
+                inset 0 0 25px rgba(255,255,0,0.3);
+  }
+
+  .scores-container {
+    @apply max-h-[300px] overflow-y-auto pr-2 space-y-2
+           scrollbar-thin scrollbar-track-gray-800
+           scrollbar-thumb-cyan-500;
+  }
+
+  .player-info {
+    @apply bg-black/30 backdrop-blur-sm rounded-xl p-6
+           border-2 border-cyan-500/20
+           hover:border-cyan-500/40 transition-colors;
+  }
+
+  .multiplayer-container {
+    @apply grid grid-cols-2 gap-8 mb-8;
+  }
+
+  .card-container {
+    @apply relative w-28 h-28 md:w-32 md:h-32;
+    perspective: 1000px;
+  }
+
+  .card-inner {
+    @apply relative w-full h-full;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+  }
+
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    @apply absolute w-full h-full;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    @apply absolute w-full h-full rounded-xl overflow-hidden backface-hidden;
+  }
+
+  .card-face.back {
+    transform: rotateY(180deg);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 10px theme('colors.cyan.400'),
+                0 0 20px theme('colors.cyan.400'),
+                0 0 30px theme('colors.cyan.500');
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .card-inner {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+  
+  .card-face {
+    @apply absolute w-full h-full rounded-xl overflow-hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-face.back {
+    transform: rotateY(180deg);
+  }
+
+  .card-inner {
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  
+  .card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-front {
+    @apply bg-gradient-to-br from-gray-900 to-gray-800 
+           border-2 border-cyan-500/30
+           shadow-[0_0_20px_theme(colors.cyan.500/30)]
+           transition-all duration-300;
+    &:hover {
+      @apply shadow-[0_0_30px_theme(colors.cyan.400/50)];
+    }
+  }
+
+  .card-front::before {
+    content: "?";
+    @apply absolute inset-0 flex items-center justify-center
+           text-5xl font-bold text-transparent bg-clip-text
+           bg-gradient-to-br from-cyan-400 to-purple-400
+           animate-pulse;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+    @apply bg-gradient-to-br from-gray-900 to-gray-800
+           border-2 transition-all duration-300;
+  }
+
+  .card-back.matched {
+    @apply border-green-500/50 shadow-[0_0_30px_theme(colors.green.500/30)];
+    & .card-content {
+      @apply text-green-400;
+    }
+  }
+
+  .card-back:not(.matched) {
+    @apply border-purple-500/50 shadow-[0_0_30px_theme(colors.purple.500/30)];
+    & .card-content {
+      @apply text-purple-400;
+    }
+  }
+
+  .card-content {
+    @apply absolute inset-0 flex items-center justify-center
+           text-6xl font-bold;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  @keyframes neonPulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  /* Enhanced card flip animation */
+  .card-inner {
+    @apply relative w-full h-full transition-all;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  }
+
+  /* Hover effects */
+  .card-container:hover .card-inner:not(.flipped) {
+    transform: perspective(1000px) rotateY(15deg) rotateX(5deg);
+    @apply shadow-[0_0_30px_theme(colors.cyan.400/60)];
+  }
+
+  .card-container:active .card-inner:not(.flipped) {
+    transform: perspective(1000px) rotateY(15deg) rotateX(5deg) scale(0.95);
+  }
+
+  /* Front face styling */
+  .card-face.front {
+    @apply bg-gradient-to-br from-gray-900/95 to-gray-800/95
+           border-2 border-cyan-500/50 rounded-xl
+           transition-all duration-500;
+    box-shadow: 0 0 15px theme('colors.cyan.500/30'),
+                inset 0 0 20px theme('colors.cyan.500/20');
+  }
+
+  .card-face.front:hover {
+    box-shadow: 0 0 25px theme('colors.cyan.400/50'),
+                inset 0 0 30px theme('colors.cyan.400/30');
+    @apply border-cyan-400/70;
+  }
+
+  /* Scanning effect */
+  .card-face.front::after {
+    content: '';
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      theme('colors.cyan.400/10') 50%,
+      transparent 100%
+    );
+    animation: scan 2s linear infinite;
+  }
+
+  /* Match success animation */
+  .card-matched .card-inner {
+    animation: matchSuccess 0.6s ease-out;
+  }
+
+  /* Particle system */
+  .match-particle {
+    @apply absolute w-1 h-1 rounded-full;
+    background: theme('colors.cyan.400');
+    animation: particle 1s ease-out forwards;
+  }
+
+  /* Selected card effect */
+  .card-selected .card-inner {
+    @apply shadow-[0_0_40px_theme(colors.yellow.400/60)];
+  }
+
+  .arcade-btn::after {
+    content: '';
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(45deg, 
+      transparent 0%,
+      currentColor 50%,
+      transparent 100%
+    );
+    animation: buttonScan 2s linear infinite;
+  }
+
+  /* Animations */
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  @keyframes particle {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+  }
+
+  @keyframes matchSuccess {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes buttonScan {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes victory {
+    0% { transform: scale(1); filter: hue-rotate(0deg); }
+    50% { transform: scale(1.05); filter: hue-rotate(180deg); }
+    100% { transform: scale(1); filter: hue-rotate(360deg); }
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .card-container {
+    @apply relative w-28 h-28 md:w-32 md:h-32;
+    perspective: 1000px;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-face.back {
+    transform: rotateY(180deg);
+  }
 }
 
-body {
-  @apply bg-gray-100 text-gray-900;
-}
-
-.game-container {
-  @apply max-w-7xl mx-auto p-4;
+{
+  "css.hover.enabled": true,
+  "css.validate.enable": true
 }
